@@ -43,6 +43,12 @@ jobs:
       - name: Run Appium Tests
         run: mvn test -Dtest=YourAppiumTestClassName
 
+      - name: Create cucumber JSON output directory
+        run: mkdir -p target/cucumber-json-output
+
       - name: Publish Test Results
         if: always()
         run: mvn surefire-report:report-only
+
+      - name: Generate Cucumber Report
+        run: mvn net.masterthought:maven-cucumber-reporting:5.7.4:generate
