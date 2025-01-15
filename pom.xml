@@ -177,43 +177,31 @@
 			</plugin>
 
 			<plugin>
-				<groupId>net.masterthought</groupId>
-				<artifactId>maven-cucumber-reporting</artifactId>
-				<version>${maven-cucumber-reporting.version}</version>
-				<executions>
-					<execution>
-						<id>execution</id>
-						<phase>test</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<projectName>Mobile - Test Automation Framework</projectName>
-							<outputDirectory>
-								${project.build.directory}/cucumber-maven-html-report</outputDirectory>
-							<inputDirectory>
-								${project.build.directory}/cucumber-json-output</inputDirectory>
-							<jsonFiles>
-								<param>**/cucumber.json</param>
-							</jsonFiles>
-							<setSkippedAsNotFailing>true</setSkippedAsNotFailing>
-							<!-- optional, set true to group features by its Ids -->
-							<mergeFeaturesById>false</mergeFeaturesById>
-							<!-- optional, set true to get a final report with
-							the latest results
-                                of the same test from different test runs -->
-							<mergeFeaturesWithRetest>false</mergeFeaturesWithRetest>
-							<!-- optional, set true to fail build on test
-							failures -->
-							<checkBuildResult>false</checkBuildResult>
-							<classifications>
-								<version>${project.version}</version>
-								<platform>${os.name}</platform>
-							</classifications>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+    <groupId>net.masterthought</groupId>
+    <artifactId>maven-cucumber-reporting</artifactId>
+    <version>${maven-cucumber-reporting.version}</version>
+    <executions>
+        <execution>
+            <id>generate-cucumber-report</id>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+            <configuration>
+                <projectName>${project.name}</projectName>
+                <skip>false</skip>
+                <outputDirectory>${project.build.directory}/jsonReports/reports</outputDirectory>
+                <inputDirectory>${project.build.directory}/jsonReports</inputDirectory>
+                <jsonFiles>
+                    <param>**/*.json</param>
+                </jsonFiles>
+                <mergeFeaturesById>false</mergeFeaturesById>
+                <mergeFeaturesWithRetest>false</mergeFeaturesWithRetest>
+                <checkBuildResult>false</checkBuildResult>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
 
 		</plugins>
 	</build>
