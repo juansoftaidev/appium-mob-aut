@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- Suppress star imports in test files -->
+    <suppress checks="AvoidStarImport" files="src[/\\]test[/\\]java[/\\].*"/>
+
+    <!-- Suppress Javadoc style check for generated objects -->
+    <suppress checks="JavadocStyleCheck"
+              files="GeneratedObject.java"
+              lines="50-9999"/>
+
+    <!-- Suppress newline at end of file for resource files -->
+    <suppress checks="NewlineAtEndOfFile" files="src[/\\]test[/\\]resources[/\\].*"/>
+    
+    <!-- Suppress line length violations for test resource files -->
+    <suppress checks="LineLength" files="src[/\\]test[/\\]resources[/\\].*"/>
+    
+    <!-- Suppress line length violations for main resource files -->
+    <suppress checks="LineLength" files="src[/\\]main[/\\]resources[/\\].*"/>
+
+    <!-- Additional suppressions can be added here -->
+    <!-- Example: Suppress magic number check in specific files -->
+    <suppress checks="MagicNumber" files="src[/\\]main[/\\]java[/\\].*"/>
+    
+    <!-- Example: Suppress missing Javadoc for specific classes -->
+    <suppress checks="MissingJavadocType" files="src[/\\]main[/\\]java[/\\].*"/>
+</suppressions>
