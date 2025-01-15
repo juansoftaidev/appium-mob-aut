@@ -1,54 +1,97 @@
-name: 🚀 CI for Appium Java Maven Project with Infer 🔍
+# This workflow tests the Maven profiles in the SDK branch for Java 22
+
+name: Java SDK Test Workflow for Maven on workflow_dispatch
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'The full commit id to build'
+        required: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  comment-run:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        java: ['22']  # Only target Java 22
+        os: ['macos-latest', 'windows-latest', 'ubuntu-latest']
+    name: Cucumber Appium Repo Java ${{ matrix.java }} - ${{ matrix.os }} Sample
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK 22
-        uses: actions/setup-java@v2
+        uses: actions/checkout@v3
         with:
-          java-version: '22'
-          distribution: 'adopt'
+          ref: ${{ github.event.inputs.commit_sha }}
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v2
+      - name: Create status check in progress
+        uses: actions/github-script@v3
+        id: status-check-in-progress
+        env:
+          job_name: Cucumber Appium Repo Java ${{ matrix.java }} - ${{ matrix.os }} Sample
+          commit_sha: ${{ github.event.inputs.commit_sha }}
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          github-token: ${{ github.token }}
+          script: |
+            const result = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.job_name,
+              head_sha: process.env.commit_sha,
+              status: 'in_progress'
+            }).catch((err) => ({status: err.status, response: err.response}));
+            console.log(`The status-check response: ${result.status} Response: ${JSON.stringify(result.response)}`);
+            if (result.status !== 201) {
+              console.log('Failed to create check run');
+            }
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
 
-      - name: Run Infer Analysis
+      - name: Run Android Maven tests
         run: |
-          infer run -- mvn clean install
+          cd android
+          mvn compile
+          mvn test
+          mvn test -P sample-local-test -D"browserstack.app"="./LocalSample.apk"
+          mvn test -P sample-test
 
-      - name: Run Unit Tests
-        run: mvn test
+      - name: Run iOS Maven tests
+        run: |
+          cd ios
+          mvn compile
+          mvn test
+          mvn test -P sample-local-test -D"browserstack.app"="./LocalSample.ipa"
+          mvn test -P sample-test
 
-      - name: Run Appium Tests
-        run: mvn test -Dtest=YourAppiumTestClassName
-
-      - name: Create cucumber JSON output directory
-        run: mkdir -p target/cucumber-json-output
-
-      - name: Publish Test Results
+      - name: Create status check completed
         if: always()
-        run: mvn surefire-report:report-only
-
-      - name: Generate Cucumber Report
-        run: mvn net.masterthought:maven-cucumber-reporting:5.7.4:generate
+        uses: actions/github-script@v3
+        id: status-check-completed
+        env:
+          conclusion: ${{ job.status }}
+          job_name: Cucumber Appium Repo Java ${{ matrix.java }} - ${{ matrix.os }} Sample
+          commit_sha: ${{ github.event.inputs.commit_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const result = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.job_name,
+              head_sha: process.env.commit_sha,
+              status: 'completed',
+              conclusion: process.env.conclusion
+            }).catch((err) => ({status: err.status, response: err.response}));
+            console.log(`The status-check response: ${result.status} Response: ${JSON.stringify(result.response)}`);
+            if (result.status !== 201) {
+              console.log('Failed to create check run');
+            }
