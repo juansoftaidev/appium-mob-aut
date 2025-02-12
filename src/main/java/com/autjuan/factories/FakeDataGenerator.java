@@ -6,10 +6,10 @@ import com.github.javafaker.Faker;
 
 /**
  * 
- * refactored FakerFactory old sch - to future AUT -Sdt 
+ * Refactored FakerFactory by [@Juansito] old sch - to New school -Java Lmda [Suppliers and predicatrs]
  * 
  * Use of Functional Interface  [Supplier<String> supplier]
- * [@JuanTM]
+ * []
  * 
  */
 public class FakeDataGenerator {
@@ -76,4 +76,3 @@ public class FakeDataGenerator {
 	}
 }
 
-// Author: [@JuanTM]
