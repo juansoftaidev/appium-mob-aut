@@ -17,9 +17,9 @@ public class DeviceFarmConfig {
     private String projectName;
 
     public DeviceFarmConfig() {
-        String accessKey = System.getenv("AWS_ACCESS_KEY");
-        String secretKey = System.getenv("AWS_SECRET_KEY");
-        String region = System.getenv("AWS_REGION");
+    	 String accessKey = System.getenv("25e9ccaaff2a78bb6be7407d1ca09f07cd36e63a");
+         String secretKey = System.getenv("407d1ca09f07cd36e63a");
+         String region = System.getenv("us-east-1");
 
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         deviceFarm = AWSDeviceFarmClientBuilder.standard()
